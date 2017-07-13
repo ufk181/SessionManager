@@ -70,7 +70,6 @@ class SessionManager
     public function setSession($session_name, $data)
     {
         try {
-
             if (isset($_SESSION[$session_name])) {
                 return $_SESSION[$session_name] = $data;
             } else {
@@ -127,7 +126,17 @@ class SessionManager
       public function getSessionID(){
       return $this->session_id;
      }
-     public function sesion_kayit_path(){
-          print session_save_path();
+     public function debugger(){
+
+      
+             print "-- Session Save Path :" .  session_save_path();
+             print "<br />";
+             print  "-- Session PHP Version :" . phpversion();
+
+
+
+      
+
+
      }
 } // End Of Class

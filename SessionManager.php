@@ -3,7 +3,7 @@
 /**
  * Class SessionManager
  *  Ufuk Bağcı tarafından yazılmıştır. Açık Kaynak Kütüphanesi olarak kullanılabilir geliştirilebilir.
- *  
+ *
  */
 
 class SessionManager
@@ -69,7 +69,21 @@ class SessionManager
     //Session Değerlerini set eder.
     public function setSession($session_name, $data)
     {
-        return $_SESSION[$session_name] = $data;
+        try {
+
+            if (isset($_SESSION[$session_name])) {
+                return $_SESSION[$session_name] = $data;
+            } else {
+                 throw  new Exception("Hata : Set Etmeye çalışılan Session Değeri CreateSession() Methodu ile  oluşturulmamıştır.");
+            }
+        }
+        catch(Exception $e){
+            print $e->getMessage();
+            }
+
+
+
+
     }
 
 
@@ -112,5 +126,8 @@ class SessionManager
  // Getter id
       public function getSessionID(){
       return $this->session_id;
+     }
+     public function sesion_kayit_path(){
+          print session_save_path();
      }
 } // End Of Class

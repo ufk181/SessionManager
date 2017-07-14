@@ -29,7 +29,7 @@ $Session->SetSession('Session_Name',['Oturum' => 'On','User' => 'ufk181']);
 
 $Session->SessionKiller('Session_Name');
 
-#Session Debugger
+# Session Debugger
 
  Aktf Etmek İçin => $a = SessionManager::Instance(true);
  Devre Dışı için => $a = SessionManager::Instance(False);

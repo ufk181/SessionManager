@@ -8,23 +8,28 @@
 
 class SessionManager
 {
-    private $session_id;
+    public static $session_id;
     public static $Instance = NULL;
     private $session_name;
+    public static $debugger;
 
 
-    public function __construct()
+    private function __construct()
     {
-        $this->session_id = session_id();
+
     }
 
-    public static function Instance()
+    public static function Instance($debug)
     {
         if (!isset(self::$Instance)) {
             self::$Instance = new SessionManager();
         }
         if (!isset($_SESSION)) {
             self::initSession();
+        }
+        self::$session_id = session_id();
+        if(isset($debug)){
+            self::$debugger = $debug;
         }
 
         return self::$Instance;
@@ -45,6 +50,8 @@ class SessionManager
         try {
             if (is_array($sessionName)) {
                 throw new Exception("Session name is not Array");
+                self::SessionKiller($sessionName);
+                exit();
             } else {
                 $_SESSION[$sessionName] = '';
             }
@@ -54,7 +61,18 @@ class SessionManager
                 $_SESSION[$sessionName] = '';
             }
         } catch (Exception  $e) {
-            print   $e->getMessage();
+
+             if(self::$debugger){
+                 echo "<pre>";
+                 print_r($e->getTrace());
+                 print "<br>";
+                 print $e->getMessage();
+                 exit();
+             }
+             else{
+                 print $e->getMessage();
+                 exit();
+             }
         }
 
     } //End of CreateSession
@@ -74,18 +92,26 @@ class SessionManager
                 return $_SESSION[$session_name] = $data;
             } else {
                  throw  new Exception("Hata : Set Etmeye çalışılan Session Değeri CreateSession() Methodu ile  oluşturulmamıştır.");
+                 self::SessionKiller($session_name);
             }
         }
         catch(Exception $e){
-            print $e->getMessage();
+            if(self::$debugger){
+                echo "<pre>";
+                print_r($e->getTrace());
+                echo "</pre>";
+                print "<br>";
+                print $e->getMessage();
+                exit();
+            }
+            else{
+                print $e->getMessage();
+                exit();
             }
 
 
-
-
+            }
     }
-
-
     //Session Getter.
     public function getSession($session_name)
     {
@@ -105,10 +131,21 @@ class SessionManager
                 }
                 else{
                     throw new Exception("Session is not Destroyed");
+                    exit();
                 }
             }
         }catch(Exception $Session){
-            print $Session->getMessage();
+            if(self::$debugger){
+                echo "<pre>";
+                print_r($Session->getTrace());
+                echo "</pre>";
+                print $Session->getMessage();
+                exit();
+            }
+            else{
+                print $Session->getMessage();
+                exit();
+            }
         }
     }
 
@@ -127,16 +164,16 @@ class SessionManager
       return $this->session_id;
      }
      public function debugger(){
-
-      
+             print "----Genel Bilgiler";
+             print "<br>";
              print "-- Session Save Path :" .  session_save_path();
              print "<br />";
              print  "-- Session PHP Version :" . phpversion();
 
-
-
-      
-
+             if(isset($_SESSION)){
+                 echo "<pre>";
+                 print_r($_SESSION);
+             }
 
      }
 } // End Of Class

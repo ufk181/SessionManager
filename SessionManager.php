@@ -14,11 +14,7 @@ class SessionManager
     public static $debugger;
 
 
-    private function __construct()
-    {
-
-    }
-
+   
     public static function Instance($debug)
     {
         if (!isset(self::$Instance)) {
@@ -30,6 +26,9 @@ class SessionManager
         self::$session_id = session_id();
         if(isset($debug)){
             self::$debugger = $debug;
+        }
+        if(phpversion() < '7.0.0'){
+            die("Php Versiyonu PHP 7 ve üstü olması gerekir");
         }
 
         return self::$Instance;
@@ -61,18 +60,18 @@ class SessionManager
                 $_SESSION[$sessionName] = '';
             }
         } catch (Exception  $e) {
-
-             if(self::$debugger){
-                 echo "<pre>";
+            if(self::$debugger){
+                 echo
                  print_r($e->getTrace());
                  print "<br>";
                  print $e->getMessage();
-                 exit();
+                 die();
              }
              else{
                  print $e->getMessage();
-                 exit();
+                 die();
              }
+
         }
 
     } //End of CreateSession
@@ -88,27 +87,27 @@ class SessionManager
     public function setSession($session_name, $data)
     {
         try {
+            //TODO : Varolmayan sessionları da oluşturuyor. Burada bir bug var onu gider.
             if (isset($_SESSION[$session_name])) {
                 return $_SESSION[$session_name] = $data;
             } else {
+                self::SessionKiller($session_name);
                  throw  new Exception("Hata : Set Etmeye çalışılan Session Değeri CreateSession() Methodu ile  oluşturulmamıştır.");
-                 self::SessionKiller($session_name);
+
             }
         }
         catch(Exception $e){
             if(self::$debugger){
                 echo "<pre>";
                 print_r($e->getTrace());
-                echo "</pre>";
                 print "<br>";
                 print $e->getMessage();
-                exit();
+                die();
             }
             else{
                 print $e->getMessage();
-                exit();
+               die();
             }
-
 
             }
     }
@@ -149,21 +148,22 @@ class SessionManager
         }
     }
 
-  public function setSessionName($name){
+    public function setSessionName($name){
 
        $this->session_name = $name;
        return session_name($name);
 
   }
- //Setter İd
+    //Setter İd
     public function setSessionID(){
       $this->session_id = session_id();
      }
- // Getter id
-      public function getSessionID(){
+    // Getter id
+     public function getSessionID(){
       return $this->session_id;
      }
      public function debugger(){
+
              print "----Genel Bilgiler";
              print "<br>";
              print "-- Session Save Path :" .  session_save_path();
@@ -176,4 +176,10 @@ class SessionManager
              }
 
      }
+
+     //Save Path
+
+
+
+
 } // End Of Class
